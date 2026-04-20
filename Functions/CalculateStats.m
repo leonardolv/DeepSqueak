@@ -8,20 +8,20 @@ end
 try
 stats.Entropy = geo_mean(I,1) ./ mean(I,1);
 catch
-warning('The function "geomean" has been renamed "geo_mean". Please update MATLAB to before it is deiscontinued');
+warning('The function "geo_mean" is unavailable. Falling back to geomean.');
 stats.Entropy = geomean(I,1) ./ mean(I,1);
 end
 
 stats.Entropy = smooth(stats.Entropy,0.1,'rlowess')';
 
-if AmplitudeThreshold > .001 & AmplitudeThreshold < .999
+if AmplitudeThreshold > 0.001 && AmplitudeThreshold < 0.999
     brightThreshold=prctile(I(:),AmplitudeThreshold*100);
 else
     disp('Warning! Amplitude Percentile Threshold Must be (0 > 1), Reverting to Default (.825)');
     brightThreshold=prctile(I(:),82.5);
 end
 
-if EntropyThreshold < .001 | EntropyThreshold > .999 
+if EntropyThreshold < 0.001 || EntropyThreshold > 0.999
     disp('Warning! Entropy Threshold Must be (0 > 1), Reverting to Default (.215)');
     EntropyThreshold=.215;
 end
@@ -32,12 +32,12 @@ end
 iter = 1;
 greaterthannoise = false(1, size(I, 2));
 while sum(greaterthannoise)<5
-    if iter==1;
-    greaterthannoise = greaterthannoise | amplitude  > brightThreshold;
-    greaterthannoise = greaterthannoise & 1-stats.Entropy  > EntropyThreshold;
+    if iter == 1
+    greaterthannoise = greaterthannoise | (amplitude > brightThreshold);
+    greaterthannoise = greaterthannoise & ((1 - stats.Entropy) > EntropyThreshold);
     else
-    greaterthannoise = greaterthannoise | amplitude  > brightThreshold / 1.1 ^ iter;
-    greaterthannoise = greaterthannoise & 1-stats.Entropy  > EntropyThreshold / 1.1 ^ iter;
+    greaterthannoise = greaterthannoise | (amplitude > (brightThreshold / (1.1 ^ iter)));
+    greaterthannoise = greaterthannoise & ((1 - stats.Entropy) > (EntropyThreshold / (1.1 ^ iter)));
     end
     iter = iter + 1;
     if iter > 2
@@ -127,10 +127,11 @@ try
     D = pdist([stats.ridgeTime' stats.ridgeFreq_smooth],'Euclidean');
     Z = squareform(D);
     leng=Z(1,end);
+    totleng = zeros(1, length(Z)-1);
     c=0;
     for ll=2:length(Z)
         c=c+1;
-        totleng(c)=Z(ll-1,ll);
+        totleng(c) = Z(ll-1, ll);
     end
     stats.Sinuosity=sum(totleng)/leng;
 catch
