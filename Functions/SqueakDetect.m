@@ -143,7 +143,7 @@ h = waitbar(1,h,'Merging Boxes...');
 Calls = merge_boxes(AllBoxes, AllScores, AllClass, audio_info, 1, score_cuttoff, 0);
 
 % Merge long 22s if detected with a long 22 network
-if contains(networkname,'long','IgnoreCase',true) & ~isempty(Calls)
+if contains(networkname,'long','IgnoreCase',true) && ~isempty(Calls)
     try
         Calls = SeperateLong22s_Callback([],[],[],inputfile,Calls);
     catch ME

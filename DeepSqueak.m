@@ -83,7 +83,7 @@ if ~isdeployed
     
     %% Display error message if running on matlab before 2017b or toolboxes not found
     if verLessThan('matlab','9.9')
-        errordlg(['Warning, DeepSqueak V3 requires MATLAB 20201 or later. It looks like you are use MATLAB ' version('-release')],'upgrade your matlab')
+        errordlg(['Warning, DeepSqueak V3 requires MATLAB R2020b or later. It looks like you are using MATLAB ' version('-release')],'upgrade your matlab')
     end
     
     try
@@ -592,12 +592,15 @@ disp(errmsg);
 
 if ~isempty(EntropyThreshold) && ~isempty(AmplitudeThreshold)
 
+
     if AmplitudeThreshold < .001 || AmplitudeThreshold > .999
         disp('Warning! Amplitude Percentile Threshold Must be (0 > 1), Reverting to Default (.825)');
+        errordlg('Amplitude Percentile Threshold must be between 0 and 1.', 'Invalid Input');
         AmplitudeThreshold = handles.data.defaultSettings.AmplitudeThreshold;
     end
     if EntropyThreshold < .001 || EntropyThreshold > .999
         disp('Warning! Entropy Threshold Must be (0 > 1), Reverting to Default (.215)');
+        errordlg('Entropy Threshold must be between 0 and 1.', 'Invalid Input');
         EntropyThreshold = handles.data.defaultSettings.EntropyThreshold;
     end
 
@@ -608,7 +611,8 @@ if ~isempty(EntropyThreshold) && ~isempty(AmplitudeThreshold)
     try
         update_fig(hObject, eventdata, handles);
     catch
-        disp('Could not update figure. Is a call loaded?')
+        disp('Could not update figure. Is a call loaded?');
+        errordlg('Could not update figure. Ensure a call is loaded.', 'Update Error');
     end
 end
 guidata(hObject, handles);
@@ -820,6 +824,10 @@ function topRightButton_Callback(hObject, eventdata, handles)
 
 % --- Executes on button press in loadAudioFile.
 function loadAudioFile_Callback(hObject, eventdata, handles)
+if isempty(handles.data.settings.audiofolder)
+    errordlg('Please select an audio folder first using File -> Select Audio Folder.', 'No Folder Selected');
+    return
+end
 h = waitbar(0,'Loading Audio Please wait...');
 update_folders(hObject, eventdata, handles);
 handles = guidata(hObject);
