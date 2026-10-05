@@ -26,5 +26,30 @@ classdef TestMergeBoxes < matlab.unittest.TestCase
             % Verify that all accepted calls have a score above the cutoff
             testCase.verifyTrue(all(Calls.Score > score_cutoff));
         end
+
+        function testEmptyBoxes(testCase)
+            audio_info.Duration = 10.0;
+            audio_info.SampleRate = 192000;
+            Calls = merge_boxes([], [], categorical({}), audio_info, 0, 0.5, 0);
+            testCase.verifyEqual(size(Calls, 1), 0);
+            testCase.verifyTrue(ismember('Box', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Score', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Type', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Accept', Calls.Properties.VariableNames));
+        end
+
+        function testAllBelowScoreCutoff(testCase)
+            AllBoxes = [1.0, 20.0, 0.5, 10.0];
+            AllScores = [0.3];
+            AllClass = categorical({'USV'});
+            audio_info.Duration = 10.0;
+            audio_info.SampleRate = 192000;
+            Calls = merge_boxes(AllBoxes, AllScores, AllClass, audio_info, 0, 0.5, 0);
+            testCase.verifyEqual(size(Calls, 1), 0);
+            testCase.verifyTrue(ismember('Box', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Score', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Type', Calls.Properties.VariableNames));
+            testCase.verifyTrue(ismember('Accept', Calls.Properties.VariableNames));
+        end
     end
 end

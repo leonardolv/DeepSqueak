@@ -2,7 +2,7 @@ function csv_Callback(hObject, eventdata, handles)
 
     function t = loop_calls(Calls, hc,includereject,waitbar_text,handles,call_file,audiodata)
         HZ_IN_kHZ = 1000;
-        callboxes = []; 
+        callboxes = [{'Start Time (s)'} {'End Time (s)'} {'Low Freq (Hz)'} {'High Freq (Hz)'} {'Label'}]; 
         for i = 1:height(Calls) % Do this for each call
             waitbar(i/height(Calls),hc,waitbar_text);
 

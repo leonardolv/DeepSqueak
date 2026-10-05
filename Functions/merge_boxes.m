@@ -1,5 +1,17 @@
 function Calls = merge_boxes(AllBoxes, AllScores, AllClass, audio_info, merge_in_frequency, score_cuttoff, pad_calls)
 %% Merge overlapping boxes
+
+% Return structured empty table if input is empty
+if isempty(AllBoxes)
+    empty_box = zeros(0, 4);
+    empty_score = zeros(0, 1);
+    empty_class = categorical(cell(0, 1));
+    empty_accept = true(0, 1);
+    Calls = table(empty_box, empty_score, empty_class, empty_accept, ...
+        'VariableNames', {'Box', 'Score', 'Type', 'Accept'});
+    return;
+end
+
 % Sort the boxes by start time
 [AllBoxes,index] = sortrows(AllBoxes);
 AllScores=AllScores(index);
@@ -42,7 +54,15 @@ bandwidth_ = high_freq_ - lower_freq;
 
 %% Do score cutoff
 Accepted = call_score>score_cuttoff;
-if ~any(Accepted); Calls=table(); return; end
+if ~any(Accepted)
+    empty_box = zeros(0, 4);
+    empty_score = zeros(0, 1);
+    empty_class = categorical(cell(0, 1));
+    empty_accept = true(0, 1);
+    Calls = table(empty_box, empty_score, empty_class, empty_accept, ...
+        'VariableNames', {'Box', 'Score', 'Type', 'Accept'});
+    return;
+end
 begin_time = begin_time(Accepted);
 end_time__ = end_time__(Accepted);
 lower_freq = lower_freq(Accepted);
